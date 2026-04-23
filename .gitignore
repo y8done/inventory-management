@@ -1,0 +1,18 @@
+# 1. Secure Database Credentials (CRITICAL)
+db.properties
+
+# 2. Compiled Java Class Files
+*.class
+/build/
+/bin/
+/target/
+
+# 3. Eclipse Workspace/Local Settings
+.metadata/
+.recommenders/
+/.settings/
+*.log
+
+# 4. OS Generated Files
+.DS_Store
+Thumbs.db
