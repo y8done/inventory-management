@@ -11,8 +11,8 @@
   <div class="page-shell">
     <section class="card auth-card">
       <div class="form-header">
-        <h1>Inventory System Login</h1>
-        <p>Access manager and admin operations.</p>
+        <h1>Admin Portal Login</h1>
+        <p>Sign in to manage users, reports, and system alerts.</p>
       </div>
       <% String error = (String) request.getAttribute("error"); if (error != null) { %>
       <div class="alert alert-error"><%= error %></div>
@@ -20,21 +20,15 @@
       <form action="LoginServlet" method="post" class="form-grid">
         <label>
           Username
-          <input type="text" name="username" placeholder="Enter username" required>
+          <input type="text" name="username" placeholder="Enter admin username" required>
         </label>
         <label>
           Password
           <input type="password" name="password" placeholder="Enter password" required>
         </label>
-        <label>
-          Role
-          <select name="role" required>
-            <option value="manager">Manager</option>
-            <option value="admin">Admin</option>
-          </select>
-        </label>
+        <input type="hidden" name="role" value="admin">
         <div class="form-actions">
-          <button type="submit" class="btn btn-primary">Sign In</button>
+          <button type="submit" class="btn btn-primary">Sign in as Admin</button>
         </div>
       </form>
     </section>
