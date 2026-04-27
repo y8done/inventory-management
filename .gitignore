@@ -1,0 +1,14 @@
+# Compiled class files
+*.class
+
+# Eclipse specific files
+.metadata/
+.settings/
+.project
+.classpath
+Servers/
+
+# Build directories
+build/
+bin/
+target/

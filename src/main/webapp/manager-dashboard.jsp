@@ -246,19 +246,23 @@ main{padding:var(--sp8);overflow-y:auto;display:flex;flex-direction:column;gap:v
     Map<String,Integer> catCount = new LinkedHashMap<>();
 
     for (Product p : products) {
-        LocalDate exp = p.getExpiryDate().toLocalDate();
-        long d = java.time.temporal.ChronoUnit.DAYS.between(LocalDate.now(), exp);
-        
-        String s = "safe";
-        if (d < 0) s = "expired";
-        else if (d <= 7) s = "critical";
-        else if (d <= 30) s = "warning";
+        // Null-Safety Shield: If there is no stock, there is no expiry date.
+        if (p.getExpiryDate() != null) {
+            LocalDate exp = p.getExpiryDate().toLocalDate();
+            long d = java.time.temporal.ChronoUnit.DAYS.between(LocalDate.now(), exp);
+            
+            String s = "safe";
+            if (d < 0) s = "expired";
+            else if (d <= 7) s = "critical";
+            else if (d <= 30) s = "warning";
 
-        if (s.equals("expired")) expiredCnt++;
-        else if (s.equals("critical")) critCnt++;
-        else if (s.equals("warning")) warnCnt++;
-        else safeCnt++;
+            if (s.equals("expired")) expiredCnt++;
+            else if (s.equals("critical")) critCnt++;
+            else if (s.equals("warning")) warnCnt++;
+            else safeCnt++;
+        }
 
+        // Metrics that apply even if out of stock
         if (p.getQuantity() <= 15) lowStockCnt++;
         totalVal += p.getPrice() * p.getQuantity();
         catCount.put(p.getCategory(), catCount.getOrDefault(p.getCategory(), 0) + 1);
@@ -305,6 +309,7 @@ main{padding:var(--sp8);overflow-y:auto;display:flex;flex-direction:column;gap:v
   </div>
   <div class="hright">
     <span class="dlabel"><%= today.format(DateTimeFormatter.ofPattern("EEE, dd MMM yyyy")) %></span>
+    <a href="LogoutServlet" class="btn" style="color: var(--exp-t); border-color: var(--exp-b); text-decoration: none; padding: 4px 12px;">Logout</a>
     <button class="ttoggle" data-theme-toggle aria-label="Toggle dark mode"></button>
   </div>
 </header>
@@ -479,9 +484,9 @@ main{padding:var(--sp8);overflow-y:auto;display:flex;flex-direction:column;gap:v
           <input class="finput" type="number" step="0.01" name="price" placeholder="0.00" required/>
         </div>
         <div class="fblock">
-          <label class="flabel">Expiry Date</label>
-          <input class="finput" type="date" name="expiryDate" required/>
-        </div>
+  				<label class="flabel">New Batch Expiry (If IN)</label>
+  			<input class="finput" type="date" name="expiryDate" />
+			</div>
         <div class="fblock" style="display:flex; align-items:flex-end;">
           <button type="submit" class="btn primary" style="width:100%;">Add to Inventory</button>
         </div>
@@ -744,8 +749,15 @@ main{padding:var(--sp8);overflow-y:auto;display:flex;flex-direction:column;gap:v
         </thead>
         <tbody>
 <%
-    // Create a copy to sort
-    List<Product> sortedExpiry = new ArrayList<>(products);
+    // Filter out products that have no stock/no expiry date before sorting
+    List<Product> sortedExpiry = new ArrayList<>();
+    for (Product p : products) {
+        if (p.getExpiryDate() != null) {
+            sortedExpiry.add(p);
+        }
+    }
+    
+    // Sort safely
     Collections.sort(sortedExpiry, (a, b) -> a.getExpiryDate().compareTo(b.getExpiryDate()));
 
     int pr = 1;

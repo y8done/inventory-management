@@ -1,68 +1,62 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="com.inventory.model.User" %>
+<%@ page import="com.inventory.model.User" %>
+<%
+    // 1. CACHE-KILLING PROTOCOL: Force the browser to never save this page
+    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1
+    response.setHeader("Pragma", "no-cache"); // HTTP 1.0
+    response.setDateHeader("Expires", 0); // Proxies
+
+    // 2. SECURITY INTERCEPT: Bounce logged-in users back to their dashboard
+    User activeUser = (User) session.getAttribute("activeUser");
+    if (activeUser != null) {
+        if ("ADMIN".equalsIgnoreCase(activeUser.getRole())) {
+            response.sendRedirect("AdminDashboardServlet");
+        } else {
+            response.sendRedirect("ManagerDashboardServlet");
+        }
+        return; // Halt execution
+    }
+%>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Clinic Inventory - Login</title>
-    <style>
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            background-color: #f4f7f6; 
-            margin: 0;
-        }
-        .login-box { 
-            background: white; 
-            padding: 40px; 
-            border-radius: 10px; 
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1); 
-            width: 320px; 
-            text-align: center; 
-        }
-        .login-box h2 {
-            margin-top: 0;
-            color: #333;
-        }
-        .field { 
-            width: 100%; 
-            padding: 12px; 
-            margin: 10px 0 20px 0; 
-            box-sizing: border-box; 
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .btn { 
-            width: 100%; 
-            padding: 12px; 
-            background: #2c3e50; 
-            color: white; 
-            border: none; 
-            border-radius: 5px; 
-            cursor: pointer; 
-            font-size: 16px;
-            font-weight: bold;
-        }
-        .btn:hover { 
-            background: #1a252f; 
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventory System Login</title>
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-
-    <div class="login-box">
-        <h2>System Login</h2>
-        
-        <form action="LoginServlet" method="POST">
-            <input type="text" name="username" class="field" placeholder="Username" required>
-            
-            <input type="password" name="password" class="field" placeholder="Password" required>
-            
-            <button type="submit" class="btn">Login</button>
-        </form>
-    </div>
-
+  <div class="auth-wrapper">
+    <section class="card auth-card">
+      <div class="form-header">
+        <h1>Inventory System Login</h1>
+        <p>Access manager and admin operations.</p>
+      </div>
+      <% String error = (String) request.getAttribute("error"); if (error != null) { %>
+      <div class="alert alert-error"><%= error %></div>
+      <% } %>
+      <form action="LoginServlet" method="post" class="form-grid">
+        <label>
+          Username
+          <input type="text" name="username" placeholder="Enter username" required>
+        </label>
+        <label>
+          Password
+          <input type="password" name="password" placeholder="Enter password" required>
+        </label>
+        <label>
+          Role
+          <select name="role" required>
+            <option value="manager">Manager</option>
+            <option value="admin">Admin</option>
+          </select>
+        </label>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Sign In</button>
+        </div>
+      </form>
+    </section>
+  </div>
 </body>
 </html>
