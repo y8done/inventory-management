@@ -1,3 +1,0 @@
-db.url=jdbc:postgresql://ep-square-king-aotio5it-pooler.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
-db.user=YOUR_USERNAME_HERE
-db.password=YOUR_PASSWORD_HERE
